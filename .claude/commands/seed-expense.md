@@ -33,7 +33,7 @@ Write and run a Python script that:
 
 1. Spreads expenses randomly across the past <months> months
 2. Uses these categories with realistic Indian descriptions 
-   and amounts (₹):
+   and amounts (Rs.):
    - Food: 50–800
    - Transport: 20–500
    - Bills: 200–3000

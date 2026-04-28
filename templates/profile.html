@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Spendly{% endblock %}
+
+{% block content %}
+<section class="profile-section">
+    <div class="profile-container">
+        <!-- Profile Header Card -->
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    {{ user.name[0].upper() }}
+                </div>
+                <div class="profile-info">
+                    <h1 class="profile-name">{{ user.name }}</h1>
+                    <p class="profile-email">{{ user.email }}</p>
+                    <p class="member-since">Member since {{ user.created_at | format_date }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Grid (Placeholders for future expense stats) -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-label">Total Expenses</span>
+                <span class="stat-value">Rs. 0</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">This Month</span>
+                <span class="stat-value">Rs. 0</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Transactions</span>
+                <span class="stat-value">0</span>
+            </div>
+        </div>
+
+        <!-- Action Cards -->
+        <div class="actions-grid">
+            <a href="{{ url_for('add_expense') }}" class="action-card">
+                <i data-lucide="plus-circle" class="action-icon"></i>
+                <h3 class="action-title">Add Expense</h3>
+                <p class="action-desc">Log a new expense instantly</p>
+            </a>
+            <a href="{{ url_for('dashboard') }}" class="action-card">
+                <i data-lucide="list" class="action-icon"></i>
+                <h3 class="action-title">View All Expenses</h3>
+                <p class="action-desc">See your expense history</p>
+            </a>
+        </div>
+    </div>
+</section>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+    });
+</script>
+{% endblock %}

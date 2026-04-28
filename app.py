@@ -1,10 +1,26 @@
+from datetime import datetime
 from flask import Flask, render_template, request, flash, redirect, url_for, abort, session
-from database.db import get_db, init_db, seed_db, create_user, get_user_by_email
+from database.db import get_db, init_db, seed_db, create_user, get_user_by_email, get_user_by_id
 from werkzeug.security import check_password_hash
 import sqlite3
 
 app = Flask(__name__)
 app.secret_key = "spendly-dev-secret-key-change-in-production"
+
+
+@app.template_filter('format_date')
+def format_date_filter(date_string):
+    """Format date string to human-readable format like 'April 24, 2026'"""
+    if not date_string:
+        return "Unknown"
+    try:
+        if isinstance(date_string, str):
+            dt = datetime.fromisoformat(date_string.replace('Z', '+00:00'))
+        else:
+            dt = date_string
+        return dt.strftime("%B %d, %Y")
+    except (ValueError, AttributeError):
+        return date_string
 
 
 # ------------------------------------------------------------------ #
@@ -64,7 +80,7 @@ def login():
 
         if user and check_password_hash(user["password_hash"], password):
             session["user_id"] = user["id"]
-            return redirect(url_for("landing"))
+            return redirect(url_for("profile"))
         else:
             flash("Invalid email or password.", "error")
             return render_template("login.html")
@@ -94,7 +110,22 @@ def logout():
 
 @app.route("/profile")
 def profile():
-    return "Profile page — coming in Step 4"
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect(url_for("login"))
+
+    user = get_user_by_id(user_id)
+    if not user:
+        session.clear()
+        return redirect(url_for("login"))
+
+    return render_template("profile.html", user=user)
+
+
+@app.route("/dashboard")
+def dashboard():
+    """Expense dashboard - redirects to profile for now"""
+    return redirect(url_for("profile"))
 
 
 @app.route("/expenses/add")

@@ -149,3 +149,43 @@ def get_user_by_email(email):
         (email,)
     )
     return cursor.fetchone()
+
+
+def get_user_by_id(user_id):
+    """
+    Fetches a user record by ID.
+
+    Args:
+        user_id: User's ID
+
+    Returns:
+        sqlite3.Row with user data or None if not found
+    """
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT id, name, email, password_hash, created_at FROM users WHERE id = ?",
+        (user_id,)
+    )
+    return cursor.fetchone()
+
+
+def get_expenses_by_user_id(user_id):
+    """
+    Fetches all expenses for a given user, ordered by date descending.
+
+    Args:
+        user_id: User's ID
+
+    Returns:
+        List of sqlite3.Row with expense data
+    """
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT id, user_id, amount, category, date, description, created_at FROM expenses WHERE user_id = ? ORDER BY date DESC",
+        (user_id,)
+    )
+    expenses = cursor.fetchall()
+    conn.close()
+    return expenses
