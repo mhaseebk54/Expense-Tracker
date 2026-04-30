@@ -1,6 +1,7 @@
 from datetime import datetime
 from flask import Flask, render_template, request, flash, redirect, url_for, abort, session
-from database.db import get_db, init_db, seed_db, create_user, get_user_by_email, get_user_by_id
+from database.db import get_db, init_db, seed_db, create_user, get_user_by_email
+from database.queries import get_user_by_id, get_summary_stats, get_recent_transactions, get_category_breakdown
 from werkzeug.security import check_password_hash
 import sqlite3
 
@@ -119,7 +120,16 @@ def profile():
         session.clear()
         return redirect(url_for("login"))
 
-    return render_template("profile.html", user=user)
+    # Get summary stats (Subagent 2)
+    stats = get_summary_stats(user_id)
+
+    # Get recent transactions (Subagent 1)
+    transactions = get_recent_transactions(user_id, limit=10)
+
+    # Get category breakdown (Subagent 3)
+    categories = get_category_breakdown(user_id)
+
+    return render_template("profile.html", user=user, stats=stats, transactions=transactions, categories=categories)
 
 
 @app.route("/dashboard")

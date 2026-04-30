@@ -8,45 +8,87 @@
         <!-- Profile Header Card -->
         <div class="profile-card">
             <div class="profile-header">
-                <div class="profile-avatar">
-                    {{ user.name[0].upper() }}
-                </div>
+                <div class="profile-avatar">{{ user.name[0].upper() }}</div>
                 <div class="profile-info">
                     <h1 class="profile-name">{{ user.name }}</h1>
                     <p class="profile-email">{{ user.email }}</p>
-                    <p class="member-since">Member since {{ user.created_at | format_date }}</p>
+                    <p class="member-since">Member since {{ user.member_since }}</p>
                 </div>
             </div>
         </div>
 
-        <!-- Stats Grid (Placeholders for future expense stats) -->
+        <!-- Stats Grid -->
         <div class="stats-grid">
             <div class="stat-card">
-                <span class="stat-label">Total Expenses</span>
-                <span class="stat-value">Rs. 0</span>
+                <span class="stat-label">TOTAL SPENT</span>
+                <span class="stat-value">₹{{ "%.2f"|format(stats.total_spent) }}</span>
             </div>
             <div class="stat-card">
-                <span class="stat-label">This Month</span>
-                <span class="stat-value">Rs. 0</span>
+                <span class="stat-label">TRANSACTIONS</span>
+                <span class="stat-value">{{ stats.transaction_count }}</span>
             </div>
             <div class="stat-card">
-                <span class="stat-label">Transactions</span>
-                <span class="stat-value">0</span>
+                <span class="stat-label">TOP CATEGORY</span>
+                <span class="stat-value top-category-name">{{ stats.top_category }}</span>
             </div>
         </div>
 
-        <!-- Action Cards -->
-        <div class="actions-grid">
-            <a href="{{ url_for('add_expense') }}" class="action-card">
-                <i data-lucide="plus-circle" class="action-icon"></i>
-                <h3 class="action-title">Add Expense</h3>
-                <p class="action-desc">Log a new expense instantly</p>
-            </a>
-            <a href="{{ url_for('dashboard') }}" class="action-card">
-                <i data-lucide="list" class="action-icon"></i>
-                <h3 class="action-title">View All Expenses</h3>
-                <p class="action-desc">See your expense history</p>
-            </a>
+        <!-- Main Content Grid -->
+        <div class="main-content-grid">
+            <!-- Recent Transactions -->
+            <div class="profile-card transactions-card">
+                <h2 class="section-title">Recent Transactions</h2>
+                {% if transactions %}
+                <div class="transaction-table-wrapper">
+                    <table class="transaction-table">
+                        <thead>
+                            <tr>
+                                <th class="col-date">DATE</th>
+                                <th class="col-description">DESCRIPTION</th>
+                                <th class="col-category">CATEGORY</th>
+                                <th class="col-amount">AMOUNT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in transactions %}
+                            <tr class="transaction-row {% if loop.index is divisibleby 2 %}alt-row{% endif %}">
+                                <td class="td-date">{{ transaction.date }}</td>
+                                <td class="td-description">{{ transaction.description }}</td>
+                                <td class="td-category">
+                                    <span class="category-pill category-{{ transaction.category|lower|replace(' ', '-') }}">{{ transaction.category }}</span>
+                                </td>
+                                <td class="td-amount">₹{{ "%.2f"|format(transaction.amount) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="no-data">No transactions yet.</p>
+                {% endif %}
+            </div>
+
+            <!-- By Category -->
+            <div class="profile-card category-card">
+                <h2 class="section-title">By Category</h2>
+                {% if categories %}
+                <div class="category-list">
+                    {% for category in categories %}
+                    <div class="category-row">
+                        <div class="category-row-header">
+                            <span class="category-label">{{ category.name }}</span>
+                            <span class="category-total">₹{{ "%.2f"|format(category.amount) }}</span>
+                        </div>
+                        <div class="progress-bar-track">
+                            <div class="progress-bar category-{{ category.name|lower|replace(' ', '-') }}" style="width: {{ category.pct }}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="no-data">No expenses to categorize.</p>
+                {% endif %}
+            </div>
         </div>
     </div>
 </section>
